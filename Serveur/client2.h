@@ -7,7 +7,6 @@ typedef struct
 {
    SOCKET sock;
    char name[BUF_SIZE];
-   SOCKET sock_current_chat_client;
 }Client;
 
 #endif /* guard */
