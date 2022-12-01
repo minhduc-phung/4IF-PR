@@ -6,6 +6,7 @@
 #include "group.h"
 #include "server2.h"
 #include "client2.h"
+#include "command_handler.h"
 
 static void init(void)
 {
@@ -34,6 +35,7 @@ static void app(void)
    char buffer[BUF_SIZE];
    /* the index for the array */
    int actual = 0;
+   int actual_group = 0;
    int max = sock;
    /* an array for all clients */
    Client clients[MAX_CLIENTS];
@@ -116,6 +118,37 @@ static void app(void)
 
                Client client = clients[i];
                int c = read_client(clients[i].sock, buffer);
+
+               char** separated_buffer = malloc(sizeof(char*)*3);
+
+               int action = handle_command(buffer, separated_buffer);
+
+               switch(action) {
+                  case 1:
+                     int j = 0;
+                     for(j = 0; j < actual; j++)
+                     {
+
+                        if (strcmp(clients[j].name, name_to_chat) == 0){
+                           printf("name_to_chat: %s\n", name_to_chat);
+                           printf("message: %s\n", message);
+                           if (strlen(message) >0) {
+                              send_message_to_client(client, clients[j], message);
+                           }else{
+                              write_client(client.sock, "Please include a message 3 \n");
+                           }
+                           
+                           break;
+                        }
+                     }
+                     if (j == actual){
+                        char message_not_found[BUF_SIZE] = {0};
+                        sprintf(message_not_found, "Client %s not found \n", name_to_chat);
+                        write_client(client.sock, message_not_found);
+                     }
+
+                     break;
+               }
                char* command = malloc(sizeof(char)*BUF_SIZE);
                command = get_param(buffer);
                
@@ -135,29 +168,7 @@ static void app(void)
                     // message = name_and_message_buffer+ strlen(name_to_chat)+1;
                   //}
 
-                  int j = 0;
-                  for(j = 0; j < actual; j++)
-                  {
-
-                     if (strcmp(clients[j].name, name_to_chat) == 0){
-                        printf("name_to_chat: %s\n", name_to_chat);
-                        printf("message: %s\n", message);
-                        if (strlen(message) >0) {
-                           send_message_to_client(client, clients[j], message);
-                        }else{
-                           write_client(client.sock, "Please include a message 3 \n");
-                        }
-                        
-                        break;
-                     }
-                  }
-                  if (j == actual){
-                     char message_not_found[BUF_SIZE] = {0};
-                     sprintf(message_not_found, "Client %s not found \n", name_to_chat);
-                     write_client(client.sock, message_not_found);
-                  }
-
-                  break;
+                  
                }else if(c == 0)
                
                /* client disconnected */

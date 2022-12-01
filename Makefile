@@ -3,7 +3,7 @@
 # Internetworking with TCP/IP, Volume III
 #
 CC=gcc -ansi  -D_GNU_SOURCE
-PROGS = client server
+PROGS = client2 server
 
 DEFS = 
 CFLAGS = -g ${DEFS} ${INCLUDE}
@@ -15,8 +15,8 @@ all: ${PROGS}
 server: ./Serveur/server2.c
 	gcc ./Serveur/server2.c -o server
 
-client: ./Client/client2.c
-	gcc ./Client/client2.c -o client
+client2: ./Client/client2.c
+	gcc ./Client/client2.c -o client2
 
 clean: 
 	rm -f Makefile.bak a.out tags core make.out ${PROGS}
