@@ -115,25 +115,51 @@ static void app(void)
             /* a client is talking */
             if(FD_ISSET(clients[i].sock, &rdfs))
             {
-
+               printf("found client \n");
                Client client = clients[i];
                int c = read_client(clients[i].sock, buffer);
 
+               if(c == 0)
+               
+               /* client disconnected */
+               
+               {
+                  printf("discon \n");
+                  closesocket(clients[i].sock);
+                  remove_client(clients, i, &actual);
+                  strncpy(buffer, client.name, BUF_SIZE - 1);
+                  strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
+                  send_message_to_all_clients(clients, client, actual, buffer, 1);
+               }
+               break;
+
                char** separated_buffer = malloc(sizeof(char*)*3);
+               
 
                int action = handle_command(buffer, separated_buffer);
-
+               //print the separated buffer elements
+               int j = 0;
+               for(j = 0; j < 3; j++)
+               {
+                  printf("separated_buffer[%d] = %s \n", j, separated_buffer[j]);
+               }
+               printf("action : %d \n", action);
+            
                switch(action) {
+                  // Case 1: the client wants to send a message to another client (Direct message)
                   case 1:
+                     //separated_buffer[0]: command ; separated_buffer[1]: name_to_chat ; separated_buffer[2]: message
+                     
+                     printf("direct message \n");
                      int j = 0;
                      for(j = 0; j < actual; j++)
                      {
 
-                        if (strcmp(clients[j].name, name_to_chat) == 0){
-                           printf("name_to_chat: %s\n", name_to_chat);
-                           printf("message: %s\n", message);
-                           if (strlen(message) >0) {
-                              send_message_to_client(client, clients[j], message);
+                        if (strcmp(clients[j].name, separated_buffer[1]) == 0){
+                           printf("name_to_chat: %s\n", separated_buffer[1]);
+                           printf("message: %s\n", separated_buffer[2]);
+                           if (strlen(separated_buffer[2]) >0) {
+                              send_message_to_client(client, clients[j], separated_buffer[2]);
                            }else{
                               write_client(client.sock, "Please include a message 3 \n");
                            }
@@ -143,12 +169,48 @@ static void app(void)
                      }
                      if (j == actual){
                         char message_not_found[BUF_SIZE] = {0};
-                        sprintf(message_not_found, "Client %s not found \n", name_to_chat);
+                        sprintf(message_not_found, "Client %s not found \n", separated_buffer[1]);
                         write_client(client.sock, message_not_found);
                      }
-
+                     break;
+                  /*
+                  case 2:
+                     //separated_buffer[0]: command ; separated_buffer[1]: group_name ; separated_buffer[2]: message
+                     int k = 0;
+                     for(k = 0; k < actual_group; k++)
+                     {
+                        if (strcmp(groups[k].name, separated_buffer[1]) == 0){
+                           printf("group_name: %s\n", separated_buffer[1]);
+                           printf("message: %s\n", separated_buffer[2]);
+                           if (strlen(separated_buffer[2]) >0) {
+                              send_message_to_group(client, groups[k], separated_buffer[2]);
+                           }else{
+                              write_client(client.sock, "Please include a message 3 \n");
+                           }
+                           
+                           break;
+                        }
+                     }
+                     if (k == actual_group){
+                        char message_not_found[BUF_SIZE] = {0};
+                        sprintf(message_not_found, "Group %s not found \n", separated_buffer[1]);
+                        write_client(client.sock, message_not_found);
+                     }
+                     break;
+                  */
+                  default:
+                     strncat(offline_buffer_all, client.name, BUF_SIZE - strlen(client.name) - 1);
+                     strncat(offline_buffer_all, " : ", BUF_SIZE - strlen(offline_buffer_all) - 1);
+                     strncat(offline_buffer_all, buffer, BUF_SIZE - strlen(offline_buffer_all) - 1);
+                     strncat(offline_buffer_all, CRLF, BUF_SIZE - strlen(offline_buffer_all) - 1);
+                     printf("%s \n", buffer);
+                     printf("from %s\n", client.name);
+                     printf("chat all \n");
+                     send_message_to_all_clients(clients, client, actual, buffer, 0);
                      break;
                }
+
+               /*
                char* command = malloc(sizeof(char)*BUF_SIZE);
                command = get_param(buffer);
                
@@ -169,17 +231,6 @@ static void app(void)
                   //}
 
                   
-               }else if(c == 0)
-               
-               /* client disconnected */
-               
-               {
-                  printf("discon \n");
-                  closesocket(clients[i].sock);
-                  remove_client(clients, i, &actual);
-                  strncpy(buffer, client.name, BUF_SIZE - 1);
-                  strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
-                  send_message_to_all_clients(clients, client, actual, buffer, 1);
                }
                else  
                {
@@ -192,7 +243,8 @@ static void app(void)
                   printf("chat all \n");
                   send_message_to_all_clients(clients, client, actual, buffer, 0);
                }
-               break;
+               */
+               
             }
          }
       }
@@ -252,6 +304,25 @@ static void send_message_to_client(Client sender, Client receiver, const char *b
    write_client(receiver.sock, message);
 }
 
+/*
+static void send_message_to_group(Client sender, Group group, const char *buffer)
+{
+   int i = 0;
+   char message[BUF_SIZE];
+   message[0] = 0;
+   for(i = 0; i < actual_group; i++)
+   {
+      // we don't send message to the sender 
+      if(sender.sock != group.members[i].sock)
+      {
+         strncpy(message, sender.name, BUF_SIZE - 1);
+         strncat(message, " : ", sizeof message - strlen(message) - 1);
+         strncat(message, buffer, sizeof message - strlen(message) - 1);
+         write_client(group.members[i].sock, message);
+      }
+   }
+}
+*/
 static char* get_param(char* buffer){
    // Get the first word before the space and do not take it out of the buffer
    char* param = malloc(sizeof(char)*BUF_SIZE);

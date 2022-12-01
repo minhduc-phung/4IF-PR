@@ -8,12 +8,12 @@ PROGS = client2 server
 DEFS = 
 CFLAGS = -g ${DEFS} ${INCLUDE}
 
-SRC = ./Serveur/server2.c ./Client/client2.c
+SRC = ./Serveur/server2.c ./Client/client2.c ./Serveur/command_handler.c
 
 all: ${PROGS}
 
-server: ./Serveur/server2.c
-	gcc ./Serveur/server2.c -o server
+server: ./Serveur/server2.c ./Serveur/command_handler.c
+	gcc ./Serveur/server2.c ./Serveur/command_handler.c -o server
 
 client2: ./Client/client2.c
 	gcc ./Client/client2.c -o client2

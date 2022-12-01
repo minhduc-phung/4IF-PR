@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include "client2.h"
+#include "command_handler.h"
 
 static int handle_command(char* buffer, char** separated_buffer){
     int i =0;

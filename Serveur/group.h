@@ -6,6 +6,7 @@
 
 typedef struct
 {
+    char* name;
     Client members[MAX_CLIENTS];
     char message[BUF_SIZE];
 }Group;
