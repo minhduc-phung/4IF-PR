@@ -3,10 +3,13 @@
 #include <errno.h>
 #include <string.h>
 
-//#include "group.h"
+
 #include "server2.h"
+#include "group.h"
 #include "client2.h"
 #include "command_handler.h"
+#include "history_dm.h"
+
 
 static void init(void)
 {
@@ -36,10 +39,12 @@ static void app(void)
    /* the index for the array */
    int actual = 0;
    int actual_group = 0;
+   int actual_nb_dm;
    int max = sock;
    /* an array for all clients */
    Client clients[MAX_CLIENTS];
-   //Group groups[MAX_GROUPS];
+   Group groups[MAX_GROUPS];
+   //History_DM history_dm[];
 
    fd_set rdfs;
 
@@ -173,36 +178,123 @@ static void app(void)
                         write_client(client.sock, message_not_found);
                      }
                      break;
-                  /*
-                  case 2:
-                     //separated_buffer[0]: command ; separated_buffer[1]: group_name ; separated_buffer[2]: message
-                     int k = 0;
-                     for(k = 0; k < actual_group; k++)
+                  // Case 2: the client wants to create a group chat
+                  case 2: 
+                     //separated_buffer[0]: command ; separated_buffer[1]: group_name ; separated_buffer[2]: group_members
+                     printf("create group \n");
+
+                     // print out the separated buffer elements
+                     printf("separator_buffer[0] = %s \n", separated_buffer[0]);
+                     printf("separator_buffer[1] = %s \n", separated_buffer[1]);
+                     printf("separator_buffer[2] = %s \n", separated_buffer[2]);
+
+                     // Check if the group name already exists
+                     int l = 0;
+                     for(l = 0; l < actual_group; l++)
                      {
-                        if (strcmp(groups[k].name, separated_buffer[1]) == 0){
-                           printf("group_name: %s\n", separated_buffer[1]);
-                           printf("message: %s\n", separated_buffer[2]);
-                           if (strlen(separated_buffer[2]) >0) {
-                              send_message_to_group(client, groups[k], separated_buffer[2]);
-                           }else{
-                              write_client(client.sock, "Please include a message 3 \n");
-                           }
-                           
+                        if (strcmp(groups[l].name, separated_buffer[1]) == 0){
+                           write_client(client.sock, "Group name already exists \n");
                            break;
                         }
                      }
-                     if (k == actual_group){
-                        char message_not_found[BUF_SIZE] = {0};
-                        sprintf(message_not_found, "Group %s not found \n", separated_buffer[1]);
-                        write_client(client.sock, message_not_found);
+
+                     printf("slicing strings to get member names \n");
+                     // Put the members name in an array
+                     char** separated_members = malloc(sizeof(char*)*MAX_CLIENTS);
+                     int k = 0;
+                     char* token = strtok(separated_buffer[2], " ");
+                     while (token != NULL) {
+                        separated_members[k] = token;
+                        k++;
+                        token = strtok(NULL, " ");
+                     }
+                     printf("putting the sender in the group \n");
+                     // Put the sender of the command in the array
+                     separated_members[k] = client.name;
+                     k++;
+                     printf("checking dups \n");
+                     // Check the array to see if there's any duplicate and remove them from the array
+                     int m = 0;
+                     int n = 0;
+                     for(m = 0; m < k; m++){
+                        for(n = m+1; n < k; n++){
+                           if (strcmp(separated_members[m], separated_members[n]) == 0){
+                              separated_members[n] = "";
+                           }
+                        }
+                     }
+                     printf("adding members to group \n");
+                     // Add all the members to the group
+                     Group g = { separated_buffer[1], 0 };
+                     for(m = 0; m < k; m++){
+                        if (strlen(separated_members[m]) > 0){
+                           strncpy(g.members_name[m], separated_members[m], BUF_SIZE - 1);
+                           g.nbMembers++;
+                        }
+                     }
+                     groups[actual_group] = g;
+                     actual_group++;
+                     printf("group created \n");
+                     printf("sending notis to members \n");
+                     // Send a message to all the members of the group
+                     char message_group_created[BUF_SIZE] = {0};
+                     sprintf(message_group_created, "User %s has created a group named '%s' with you as a member. \n", client.name, separated_buffer[1]);
+                     for(m = 0; m < k; m++){
+                        if (strlen(g.members_name[m]) > 0){
+                           for(n = 0; n < actual; n++){
+                              if (strcmp(clients[n].name, g.members_name[m]) == 0){
+                                 // Send to the group creator a different message than the other members
+                                 if (strcmp(clients[n].name, client.name) != 0){
+                                    write_client(clients[n].sock, message_group_created);
+                                 } else {
+                                    write_client(clients[n].sock, "Group created. \n");
+                                 }
+                              }
+                           }
+                        }
                      }
                      break;
-                  */
-                 // Case 3: the client wants to create a group
+                 // Case 3: the client sends a message to a group
                  case 3:
+                     //separated_buffer[0]: command ; separated_buffer[1]: group_name ; separated_buffer[2]: message
+                     printf("send message to group \n");
+                     // Check if the group exists
+                     int o = 0;
+                     for(o = 0; o < actual_group; o++)
+                     {
+                        if (strcmp(groups[o].name, separated_buffer[1]) == 0){
+                           // Check if the sender is a member of the group
+                           int p = 0;
+                           for(p = 0; p < groups[o].nbMembers; p++){
+                              if (strcmp(groups[o].members_name[p], client.name) == 0){
+                                 // Send the message to all the members of the group
+                                 int q = 0;
+                                 for(q = 0; q < groups[o].nbMembers; q++){
+                                    if (strlen(groups[o].members_name[q]) > 0){
+                                       for(n = 0; n < actual; n++){
+                                          if (strcmp(clients[n].name, groups[o].members_name[q]) == 0){
+                                             // Compose the message to send to the group members
+                                             char message_group[BUF_SIZE] = {0};
+                                             sprintf(message_group, "[%s] %s: %s \n",  groups[o].name, client.name, separated_buffer[2]);
+                                             write_client(clients[n].sock, message_group);
+                                          }
+                                       }
+                                    }
+                                 }
+                                 break;
+                              }
+                           }
+                           if (p == groups[o].nbMembers){
+                              write_client(client.sock, "You are not a member of this group \n");
+                           }
+                           break;
+                        }
+                     }
+                     if (o == actual_group){
+                        write_client(client.sock, "Group not found \n");
+                     }
+                     break;
                      
-
-
                  // Default: the client wants to send a message to all clients (Broadcast message)
                   default:
                      strncat(offline_buffer_all, client.name, BUF_SIZE - strlen(client.name) - 1);
