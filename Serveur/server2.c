@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include "group.h"
+//#include "group.h"
 #include "server2.h"
 #include "client2.h"
 #include "command_handler.h"
@@ -39,7 +39,7 @@ static void app(void)
    int max = sock;
    /* an array for all clients */
    Client clients[MAX_CLIENTS];
-   Group groups[MAX_GROUPS];
+   //Group groups[MAX_GROUPS];
 
    fd_set rdfs;
 
@@ -121,8 +121,7 @@ static void app(void)
 
                if(c == 0)
                
-               /* client disconnected */
-               
+               /* client disconnected */               
                {
                   printf("discon \n");
                   closesocket(clients[i].sock);
@@ -130,8 +129,9 @@ static void app(void)
                   strncpy(buffer, client.name, BUF_SIZE - 1);
                   strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
                   send_message_to_all_clients(clients, client, actual, buffer, 1);
+                  break;
                }
-               break;
+               
 
                char** separated_buffer = malloc(sizeof(char*)*3);
                
@@ -198,6 +198,12 @@ static void app(void)
                      }
                      break;
                   */
+                 // Case 3: the client wants to create a group
+                 case 3:
+                     
+
+
+                 // Default: the client wants to send a message to all clients (Broadcast message)
                   default:
                      strncat(offline_buffer_all, client.name, BUF_SIZE - strlen(client.name) - 1);
                      strncat(offline_buffer_all, " : ", BUF_SIZE - strlen(offline_buffer_all) - 1);
@@ -323,17 +329,6 @@ static void send_message_to_group(Client sender, Group group, const char *buffer
    }
 }
 */
-static char* get_param(char* buffer){
-   // Get the first word before the space and do not take it out of the buffer
-   char* param = malloc(sizeof(char)*BUF_SIZE);
-   int i = 0;
-   while(buffer[i] != ' ' && buffer[i] != '\0'){
-      param[i] = buffer[i];
-      i++;
-   }
-   param[i] = '\0';
-   return param;
-}
 
 static int init_connection(void)
 {

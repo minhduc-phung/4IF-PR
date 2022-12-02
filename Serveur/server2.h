@@ -34,6 +34,8 @@ typedef struct in_addr IN_ADDR;
 
 #define BUF_SIZE    1024
 
+#include "client2.h"
+
 static void init(void);
 static void end(void);
 static void app(void);
@@ -45,6 +47,5 @@ static void send_message_to_client(Client sender, Client receiver, const char *b
 static void send_message_to_all_clients(Client *clients, Client client, int actual, const char *buffer, char from_server);
 static void remove_client(Client *clients, int to_remove, int *actual);
 static void clear_clients(Client *clients, int actual);
-static char* get_param(char *buffer);
 
 #endif /* guard */

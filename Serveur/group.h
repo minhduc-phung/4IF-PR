@@ -1,8 +1,8 @@
 #ifndef GROUP_H
 #define GROUP_H
-
-#include "server2.h"
+#define MAX_CLIENTS     100
 #include "client2.h"
+
 
 typedef struct
 {

@@ -5,7 +5,7 @@
 
 #include "command_handler.h"
 
-static int handle_command(char* buffer, char** separated_buffer){
+int handle_command(char* buffer, char** separated_buffer){
     int i =0;
     for (i=0; i< 3; i++) {
         separated_buffer[i] = malloc(sizeof(char)*BUF_SIZE);
@@ -13,7 +13,7 @@ static int handle_command(char* buffer, char** separated_buffer){
     char* command = malloc(sizeof(char)*BUF_SIZE);
     command = get_param(buffer);
     if ((strcmp(buffer, "msgto") != 0) && (strcmp(buffer, "msgto ") != 0) && (strcmp(command, "msgto") == 0)) {
-        char* name_and_message_buffer = buffer + strlen(separated_buffer[0]) + 1;
+        char* name_and_message_buffer = buffer + strlen(command) + 1;
         char* name_to_chat = malloc(sizeof(char)*BUF_SIZE);
         name_to_chat = get_param(name_and_message_buffer);
 
@@ -28,6 +28,10 @@ static int handle_command(char* buffer, char** separated_buffer){
         separated_buffer[1] = name_to_chat;
         separated_buffer[2] = message;
         return 1;
+    // Create a group chat
+    } else if ((strcmp(buffer, "crtgr") != 0) && (strcmp(buffer, "crtgr ") != 0) && (strcmp(command, "crtgr") == 0)){
+         
+
     }
 }
 
