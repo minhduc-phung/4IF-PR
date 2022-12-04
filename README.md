@@ -1,6 +1,6 @@
 # TP 4IF - Programmation Réseaux / Network Programming
 
-[Version francaise](#french-version)
+[English version](#english-version)
 
 ## 1. Composition du binôme
 - PHUNG Minh Duc
@@ -8,8 +8,8 @@
 
 ## 2. Description des fonctionnalités implémentées
 Au cours du projet, nous avons réussi à mettre en œuvre les fonctionnalités suivantes :
-- Messagerie de diffusion : un client peut envoyer un message à tous les clients connectés au serveur. Tous les clients hors ligne se connectant au serveur verront immédiatement les messages envoyés dans le chat de diffusion.
-- Messagerie privé : Un client peut envoyer des messages directs à un autre client.
+- Messagerie de diffusion : un client peut envoyer un message à tous les clients connectés au serveur. Il recevra une notification lorsque quelqu'un lui envoie un message, puis il pourra passer au salon de discussion correspondant pour voir la conversation. Tous les clients hors ligne se connectant au serveur verront immédiatement les messages envoyés dans le chat de diffusion.
+- Messagerie privé : Un client peut envoyer des messages directs à un autre client. Il ne verra pas les messages des autres personnes, à l'exception de celui avec qui il discute. Lorsqu'il change de salon de discussion, il verra les messages correspondants. Notez que personne ne peut envoyer de message à un client hors ligne.
 - Messagerie de groupe : Un client peuvent créer un groupe de discussion et envoyer des messages au groupe.
 - Historique des conversations : les messages sont persistants et sont chargés à chaque démarrage du serveur. Les clients qui se connectent au serveur peuvent également voir tous les messages qui leur ont été envoyés lorsqu'ils étaient hors ligne. (L'historique des conversations en groupe n'est pas implémenté)
 
