@@ -1,6 +1,6 @@
 # TP 4IF - Programmation Réseaux / Network Programming
 
-[English version](#english-version)
+[Version francaise](#french-version)
 
 ## 1. Composition du binôme
 - PHUNG Minh Duc
@@ -44,8 +44,8 @@ Our group consists of 2 students:
 
 ## 2. Description of implemented funcionalities
 In the course of the project, we managed to implement the following functionalities:
-- Broadcast chat: A client can send a message to all the clients connected to the server. Any offline clients connecting to the server will immediately see the messages sent in the broadcast chat.
-- Private chat: The client can send direct messages to another client.
+- Broadcast chat: A client can send a message to all the clients connected to the server. They will receive a notification when someone texting them, then they can change to the corresponding chat room to see the conversation. Any offline clients connecting to the server will immediately see the messages sent in the broadcast chat.
+- Private chat: The client can send direct messages to another client. They will not see messages from other people except the one they are chatting to. When they change the chatting room, he will see the corresponding messages. Note that no ones can send a message to an offline client.
 - Group chat: The clients can make a group chat and send messages to the group.
 - History of conversations: the messages are persisted and are loaded whenever the server starts. The clients connectting to the server can also see any messages which were sent to them when they were offline. (Group chat history is not implemented)
 
