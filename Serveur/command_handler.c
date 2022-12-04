@@ -65,14 +65,40 @@ int handle_command(char* buffer, char** separated_buffer){
         separated_buffer[1] = group_name;
         separated_buffer[2] = message;
         return 3;
+    }
     // Leave Group
-    } else if ((strcmp(buffer, "leavegr") != 0) && (strcmp(buffer, "leavegr ") != 0) && (strcmp(command, "leavegr") == 0)){
+    else if ((strcmp(buffer, "leavegr") != 0) && (strcmp(buffer, "leavegr ") != 0) && (strcmp(command, "leavegr") == 0)){
         // Get the name of the group
         char* group_name = buffer + strlen(command) + 1;
         separated_buffer[0] = command;
         separated_buffer[1] = group_name;
         separated_buffer[2] = "";
         return 4;
+    }
+    // List Groups
+    else if (strcmp(command, "lsgr") == 0){
+        separated_buffer[0] = command;
+        separated_buffer[1] = "";
+        separated_buffer[2] = "";
+        return 5;
+    }
+    // Remove Group
+    else if ((strcmp(buffer, "rmgr") != 0) && (strcmp(buffer, "rmgr ") != 0) && (strcmp(command, "rmgr") == 0)){
+        // Get the name of the group
+        char* group_name = buffer + strlen(command) + 1;
+        separated_buffer[0] = command;
+        separated_buffer[1] = group_name;
+        separated_buffer[2] = "";
+        return 6;
+    }
+    // List Members
+    else if ((strcmp(buffer, "lsmem") != 0) && (strcmp(buffer, "lsmem ") != 0) && (strcmp(command, "lsmem") == 0)){
+        // Get the name of the group
+        char* group_name = buffer + strlen(command) + 1;
+        separated_buffer[0] = command;
+        separated_buffer[1] = group_name;
+        separated_buffer[2] = "";
+        return 7;
     }
     return 0;
 }

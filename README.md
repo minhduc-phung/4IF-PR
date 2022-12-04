@@ -16,4 +16,6 @@ We decided to use the command-line interface to send commands and messages:
 - `grmsg [groupname] [message]` to send a message to a group.
 - `crtgr [groupname] [username1] [username2] [username3] ...` to create a group. Note that the creator of the group is automatically added to the group.
 - `leavegr [groupname]` to leave a group.
-
+- `lsgr` to list all the groups.
+- `rmgr [groupname]` to remove a group. Only the creator of the group can remove it.
+- `lsmem [groupname]` to list all the members of a group.
