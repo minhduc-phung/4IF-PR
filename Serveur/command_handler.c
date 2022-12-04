@@ -5,11 +5,13 @@
 
 #include "command_handler.h"
 
+
 int handle_command(char* buffer, char** separated_buffer){
     int i =0;
     for (i=0; i< 3; i++) {
         separated_buffer[i] = malloc(sizeof(char)*BUF_SIZE);
     }
+    
     char* command = malloc(sizeof(char)*BUF_SIZE);
     command = get_param(buffer);
     // Direct Message
@@ -63,6 +65,14 @@ int handle_command(char* buffer, char** separated_buffer){
         separated_buffer[1] = group_name;
         separated_buffer[2] = message;
         return 3;
+    // Leave Group
+    } else if ((strcmp(buffer, "leavegr") != 0) && (strcmp(buffer, "leavegr ") != 0) && (strcmp(command, "leavegr") == 0)){
+        // Get the name of the group
+        char* group_name = buffer + strlen(command) + 1;
+        separated_buffer[0] = command;
+        separated_buffer[1] = group_name;
+        separated_buffer[2] = "";
+        return 4;
     }
     return 0;
 }

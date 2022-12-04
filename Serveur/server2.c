@@ -38,6 +38,7 @@ static void app(void)
    char buffer[BUF_SIZE];
    /* the index for the array */
    int actual = 0;
+   /* the number of groups */
    int actual_group = 0;
    int actual_nb_dm;
    int max = sock;
@@ -294,6 +295,50 @@ static void app(void)
                         write_client(client.sock, "Group not found \n");
                      }
                      break;
+                  // Case 4: the client wants to leave a group
+                  case 4:
+                     //separated_buffer[0]: command ; separated_buffer[1]: group_name
+                     printf("leave group \n");
+                     // Check if the group exists
+                     int r = 0;
+                     for(r = 0; r < actual_group; r++)
+                     {
+                        if (strcmp(groups[r].name, separated_buffer[1]) == 0){
+                           // Check if the sender is a member of the group
+                           int s = 0;
+                           for(s = 0; s < groups[r].nbMembers; s++){
+                              if (strcmp(groups[r].members_name[s], client.name) == 0){
+                                 // Remove the sender from the group
+                                 remove_member(groups, s, r);
+                                 // Send a message to all the members of the group
+                                 int t = 0;
+                                 for(t = 0; t < groups[r].nbMembers; t++){
+                                    if (strlen(groups[r].members_name[t]) > 0){
+                                       for(n = 0; n < actual; n++){
+                                          if (strcmp(clients[n].name, groups[r].members_name[t]) == 0){
+                                             // Compose the message to send to the group members
+                                             char message_group[BUF_SIZE] = {0};
+                                             sprintf(message_group, "User %s has left the group '%s'. \n", client.name, groups[r].name);
+                                             write_client(clients[n].sock, message_group);
+                                          }
+                                       }
+                                    }
+                                 }
+                                 break;
+                              }
+                           }
+                           if (s == groups[r].nbMembers){
+                              write_client(client.sock, "You are not a member of this group \n");
+                           }
+                           break;
+                        }
+                     }
+                     if (r == actual_group){
+                        write_client(client.sock, "Group not found \n");
+                     }
+                     break;
+
+
                      
                  // Default: the client wants to send a message to all clients (Broadcast message)
                   default:
@@ -367,6 +412,23 @@ static void remove_client(Client *clients, int to_remove, int *actual)
    memmove(clients + to_remove, clients + to_remove + 1, (*actual - to_remove - 1) * sizeof(Client));
    /* number client - 1 */
    (*actual)--;
+}
+
+static void remove_group(Group *groups, int to_remove, int *actual_group)
+{
+   /* we remove the group in the array */
+   memmove(groups + to_remove, groups + to_remove + 1, (*actual_group - to_remove - 1) * sizeof(Group));
+   /* number group - 1 */
+   (*actual_group)--;
+}
+
+static void remove_member(Group *groups, int to_remove, int group_index)
+{
+   /* we remove a member in the array which is not the last one */
+   memmove(groups[group_index].members_name + to_remove, groups[group_index].members_name + to_remove + 1, (groups[group_index].nbMembers - to_remove - 1) * BUF_SIZE);
+   
+   /* number member - 1 */
+   (groups[group_index].nbMembers)--;
 }
 
 static void send_message_to_all_clients(Client *clients, Client sender, int actual, const char *buffer, char from_server)
