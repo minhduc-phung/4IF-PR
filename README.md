@@ -11,7 +11,7 @@ Au cours du projet, nous avons réussi à mettre en œuvre les fonctionnalités 
 - Messagerie de diffusion : un client peut envoyer un message à tous les clients connectés au serveur. Tous les clients hors ligne se connectant au serveur verront immédiatement les messages envoyés dans le chat de diffusion.
 - Messagerie privé : Un client peut envoyer des messages directs à un autre client.
 - Messagerie de groupe : Un client peuvent créer un groupe de discussion et envoyer des messages au groupe.
-- Historique des conversations : les messages sont persistants et sont chargés à chaque démarrage du serveur. Les clients qui se connectent au serveur peuvent également voir tous les messages qui leur ont été envoyés lorsqu'ils étaient hors ligne.
+- Historique des conversations : les messages sont persistants et sont chargés à chaque démarrage du serveur. Les clients qui se connectent au serveur peuvent également voir tous les messages qui leur ont été envoyés lorsqu'ils étaient hors ligne. (L'historique des conversations en groupe n'est pas implémenté)
 
 ## 3. Comment compiler et exécuter les programmes
 La compilation et l'exécution de notre programme se fait sur une invite de commande.
@@ -21,16 +21,19 @@ Pour démarrer le serveur sur une machine, tapez la commande `./server`.
 
 **Remarque** : Si vous tapez l'invite de commande après cela sur la machine serveur, le serveur sera **arrêté** et tous les clients qui s'y connectent seront déconnectés.
 
-Après avoir démarré un serveur, tapez la commande `./client2 [adresse_ip_serveur] [nom_utilisateur]` pour vous connecter au serveur avec le nom d'utilisateur `nom_client`. Ensuite, le client peut taper des commandes ci-dessous pour utiliser le programme :
+Après avoir démarré un serveur, tapez la commande `./client [adresse_ip_serveur] [nom_utilisateur]` pour vous connecter au serveur avec le nom d'utilisateur `nom_client`. Ensuite, le client peut taper des commandes ci-dessous pour utiliser le programme :
 - Par défaut, une fois le client connecté, pour envoyer un message global, le client peut taper tout ce qui ne commence pas par le nom d'une des commandes et appuyer sur Entrée. (*notez que si vous écrivez seulement la commande sans aucun argument, vous enverrez un message avec le nom de la commande comme contenu*)
 - `drmsg [nom_utilisateur] [message]` : Envoie un message direct à un autre client et change la salle de discussion par défaut en salle de discussion privée avec ce client. (c'est-à-dire que toute ligne qui ne commence pas par le nom d'une commande sera comptée comme un message direct à ce client)
 - `allmsg [message]` : Envoie un message à tous les clients et change la salle de discussion par défaut en salle de discussion "à tous".
 - `grmsg [nom_du_groupe] [message]` : Envoie un message à tous les membres d'un groupe et change la salle de discussion par défaut en salle de discussion de ce groupe.
 - `crtgr [nom du groupe] [utilisateur1] {utilisateurN}` : Crée un groupe avec les noms d'utilisateurs saisis comme membres. Notez que le créateur du groupe est automatiquement ajouté au groupe.
-- `leavegr [nom du groupe]` : Quitte un groupe.
+- `leavegr [nom du groupe]` : Quitte un groupe et retourne dans le salon de discussion global.
 - `lsgr` : Liste tous les groupes existants.
 - `rmgr [nom du groupe]` : Supprime un groupe. Seul le créateur du groupe peut le supprimer.
 - `lsmem [nom du groupe]` : Liste tous les membres d'un groupe.
+
+## 4. Erreurs connues et comportements indésirables
+- La suppression d'un groupe fait en sorte que les clients qui envoient des messages dans le même groupe par défaut (sans la commande) ne font rien.
 
 
 #### English version
@@ -44,7 +47,7 @@ In the course of the project, we managed to implement the following functionalit
 - Broadcast chat: A client can send a message to all the clients connected to the server. Any offline clients connecting to the server will immediately see the messages sent in the broadcast chat.
 - Private chat: The client can send direct messages to another client.
 - Group chat: The clients can make a group chat and send messages to the group.
-- History of conversations: the messages are persisted and are loaded whenever the server starts. The clients connectting to the server can also see any messages which were sent to them when they were offline.
+- History of conversations: the messages are persisted and are loaded whenever the server starts. The clients connectting to the server can also see any messages which were sent to them when they were offline. (Group chat history is not implemented)
 
 ## 3. How to compile and execute the programs
 To compile the program, go to the project folder on the command prompt and type `make`. Two executable files should be generated, one for the server and one for the client.
@@ -61,3 +64,7 @@ After starting a server, type the command `./client2 [server_ip_address] [client
 - `lsgr`: List all the existing groups.
 - `rmgr [groupname]`: Remove a group. Only the creator of the group can remove it.
 - `lsmem [groupname]`: List all the members of a group.
+
+## 4. Known errors and unwanted behaviors
+- Removing a group causes any clients messaging in that group by default (without the command) to do nothing.
+

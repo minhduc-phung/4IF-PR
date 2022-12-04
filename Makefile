@@ -3,20 +3,20 @@
 # Internetworking with TCP/IP, Volume III
 #
 CC=gcc -ansi  -D_GNU_SOURCE
-PROGS = client2 server
+PROGS = client server
 
 DEFS = 
 CFLAGS = -g ${DEFS} ${INCLUDE}
 
-SRC = ./Serveur/server2.c ./Client/client2.c ./Serveur/command_handler.c
+SRC = ./Serveur/server.c ./Client_Ex/client.c ./Serveur/command_handler.c
 
 all: ${PROGS}
 
-server: ./Serveur/server2.c ./Serveur/command_handler.c
-	gcc ./Serveur/server2.c ./Serveur/command_handler.c -o server
+server: ./Serveur/server.c ./Serveur/command_handler.c
+	gcc ./Serveur/server.c ./Serveur/command_handler.c -o server
 
-client2: ./Client/client2.c
-	gcc ./Client/client2.c -o client2
+client: ./Client_Ex/client.c
+	gcc ./Client_Ex/client.c -o client
 
 clean: 
 	rm -f Makefile.bak a.out tags core make.out ${PROGS}

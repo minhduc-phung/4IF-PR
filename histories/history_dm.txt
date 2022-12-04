@@ -1,0 +1,7 @@
+Between:
+a
+b
+Conversation:
+a : hi
+b : hello
+b : why
