@@ -306,7 +306,7 @@ static void app(void)
                            for(p = 0; p < groups[o].nbMembers; p++){
                               if (strcmp(groups[o].members_name[p], client.name) == 0){
                                  char group_name[BUF_SIZE];
-                                 strcat(group_name, "grp ");
+                                 strcpy(group_name, "grp ");
                                  strcat(group_name, groups[o].name);
                                  if (strcmp(client_chat_dest[client.sock-min_csock], group_name) !=0) {
                                     char message_to_sender[BUF_SIZE];
@@ -510,19 +510,23 @@ static void app(void)
 						for(k=0; k< actual_group; k++) {
 							strcpy(group_name, "grp ");
 							strcat(group_name, groups[k].name);
+                     //printf("group name: %s \n", group_name);
+                     //printf("client_chat_dest: %s \n", client_chat_dest[client.sock - min_csock]);
 							if (strcmp(group_name, client_chat_dest[client.sock - min_csock]) == 0){
+                        //printf("group name: %s \n", groups[k].name);
+                        // Compose the message to send to the group members
+                        char message_group[BUF_SIZE] = {0};
+                        sprintf(message_group, "[%s] %s: %s \r\n",  groups[k].name, client.name, buffer);
+								strncat(groups[k].message, message_group, BUF_SIZE-strlen(groups[k].message)-1);
                         for(r = 0; r < groups[k].nbMembers; r++){
                            if (strlen(groups[k].members_name[r]) > 0){
-                              // Compose the message to send to the group members
-                              char message_group[BUF_SIZE] = {0};
-                              sprintf(message_group, "[%s] %s: %s \r\n",  groups[k].name, client.name, buffer);
-								      strncat(groups[k].message, message_group, BUF_SIZE-strlen(groups[k].message)-1);
                               for(n = 0; n < actual; n++){
                                  if ((strcmp(clients[n].name, groups[k].members_name[r]) == 0) && (strcmp(clients[n].name, client.name) != 0)){
                                     write_client(clients[n].sock, message_group);
                                  }
                               }
                            }
+                           
                         }
 								break;
 							}
